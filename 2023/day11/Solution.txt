@@ -1,0 +1,260 @@
+Git Stash:
+git stash is a Git command that allows you to save your current changes in a "stash" and revert back to a clean working directory without committing your changes.
+
+This can be useful when you are working on a task but need to switch to another task or branch before you are finished with the current task. Instead of committing your changes, which may not be complete or ready for review, you can use git stash to save your work in progress and then continue with the other task.
+
+The git stash command creates a new stash object that contains the changes in your working directory. This stash object is then saved on a stack of stashes, which you can access and manipulate using other Git commands.
+
+Here are some common git stash commands:
+
+git stash save <message>: Creates a new stash with the changes in your working directory and a custom message.
+
+git stash list: Lists all the stashes on the stash stack.
+
+git stash apply: Applies the most recent stash to your working directory, leaving the stash on the stack.
+
+git stash pop: Applies the most recent stash to your working directory and removes the stash from the stack.
+
+git stash drop: Removes the most recent stash from the stack.
+
+git stash clear: Removes all stashes from the stack.
+
+git stash is a useful tool for managing changes in Git and allows you to switch between tasks or branches without committing incomplete work.
+
+Let's take an live example.
+
+I have a file feature01.txt and I have done some changes as below.
+
+
+COPY
+vi feature01.txt 
+This is Git stash example
+Now I saved the file and write command
+
+
+COPY
+git stash
+//input
+Saved working directory and index state WIP on dev: 1fb8602 Added feature3 in development branch
+Now I it revert your working directory to the last committed state
+
+
+COPY
+cat feature01.txt 
+//below is my old code not the one which I added before stash
+ This is the bug fix in development branch
+
+
+This is gadbad code
+Now I can work on any branch and my code is saved on a temporary location and I will not lose that code.
+
+Now I want to see my stash
+
+
+COPY
+$ git stash list
+stash@{0}: WIP on dev: 1fb8602 Added feature3 in development branch
+Now I want to add my code to the file but it should be in stash stack also.
+
+
+COPY
+$ git stash pop
+error: Your local changes to the following files would be overwritten by merge:
+    feature01.txt
+Please commit your changes or stash them before you merge.
+Aborting
+The stash entry is kept in case you need it again.
+
+COPY
+git stash list
+stash@{0}: WIP on dev: 1fb8602 Added feature3 in development branch
+
+COPY
+cat feature01.txt 
+
+ This is the bug fix in development branch
+
+
+-----------------------------------------
+This is Git stash example
+Now I want to remove most recent stash from the stack.
+
+
+COPY
+git stash drop
+
+git stash list
+stash@{0}: WIP on dev: 1fb8602 Added feature3 in development branch
+root@saif-HP-Pavilion-g6-Notebook-PC:/prod/DevOpsHit3# git stash drop
+Dropped refs/stash@{0} (d797439ca4dbc5ffb7986732a8f422642c382931)
+If we have multiple stash in he list and want to clear all in single go.
+
+
+COPY
+$ git stash clear
+Cherry Pick
+We will understand this Cherry pic by an example.
+
+Suppose, I am on branch dev and I have file called feature01 and I did below tasks.
+
+
+COPY
+// I did vi and added below code.
+This is first commit in Dev for Cherry Pick example
+//then I stage it and commit with message " First Cherry Commit
+"
+Again did the same task as below.
+
+
+COPY
+// I did vi and added below code.
+This is second commit in Dev for Cherry pick example
+
+//then I stage it and commit with message " secon Cherry Commit"
+I did it four time refer below.
+
+
+COPY
+
+// I did vi and added below code.
+This is third commit in Dev for Cherry pick example
+
+
+//then I stage it and commit with message " third Cherry Commit"
+
+
+
+
+// I did vi and added below code.
+This is fourth commit in Dev for Cherry pick example
+
+
+//then I stage it and commit with message " fourth Cherry Commit
+Here is cat of feature01.txt
+
+
+COPY
+cat feature01.txt 
+This is first commit in Dev for Cherry Pick example
+
+
+
+This is second commit in Dev for Cherry pick example
+
+
+This is third commit in Dev for Cherry pick example
+
+
+This is fourth commit in Dev for Cherry pick example
+Here is git log.
+
+
+COPY
+git log --oneline
+1b17e45 (HEAD -> dev) fourth Cherry Commit
+21a6ef6 third Cherry Commit
+2ef7944 secon Cherry Commit
+7f8e7ac First Cherry Commit
+Now I will go to master branch which has same file and I will add the third commit to my feature01.txt file in master.
+
+
+COPY
+git log --oneline
+1b17e45 fourth Cherry Commit
+21a6ef6 third Cherry Commit
+2ef7944 secon Cherry Commit
+7f8e7ac First Cherry Commit
+
+COPY
+git checkout master
+Switched to branch 'master'
+Now run cherry-pick command along with the commit id
+
+
+COPY
+git cherry-pick 21a6ef6
+//you will get conflict here like below
+Auto-merging feature01.txt
+CONFLICT (content): Merge conflict in feature01.txt
+error: could not apply 2de2840... cherry pick five
+hint: after resolving the conflicts, mark the corrected paths
+hint: with 'git add <paths>' or 'git rm <paths>'
+hint: and commit the result with 'git commit'
+Don't worry you just need to do
+
+
+COPY
+$ git add . 
+//commit
+git commit -m "Yor commit messege"
+Now check the log
+
+
+COPY
+git log --oneline
+
+you will result like below
+
+git log --oneline
+24488e2 (HEAD -> master) cherry pick third commit on master
+Git Rebase
+Git Rebase is used to apply a set of commits from one branch onto another branch without losing commit history, If you will use rebase for branch 2 from branch 1 it will carry commit history as well.
+
+Let's take a hands-on example for the same.
+
+
+COPY
+// I create a file my.txt on dev branch and added some text in it.
+nano my.txt 
+This is dev my.txt file
+
+COPY
+//stage and commit
+$ git add my.txt
+git commit -m "my.txt commit on dev"
+Now checkout master branch
+
+
+COPY
+$ git checkout master
+Switched to branch 'master'
+Now rebase dev branch here.
+
+
+COPY
+git rebase dev
+Here will be similar result
+
+
+COPY
+ git rebase dev
+First, rewinding head to replay your work on top of it...
+Applying: Master commit
+Applying: feature master commit
+Applying: cherry pick commit in master for sixth
+Using index info to reconstruct a base tree...
+M    feature01.txt
+.git/rebase-apply/patch:15: trailing whitespace.
+This is my sixth commit in Dev for cherry pick
+Now do stage and commit.
+
+
+COPY
+git add .
+git commit -m "rebase commit on master"
+Now if you check git log you will see all the history on master which was on dev earlier.
+
+
+COPY
+it log --oneline
+274e0a5 (HEAD) rebase commit on master
+0b61535 feature master commit
+5b06ea4 Master commit
+46dcf8a (dev) my.txt commit on dev
+fa1971c sixth cherry pick
+2de2840 cherry pick five
+
+COPY
+ls
+//my.txt file also here now.
+feature01.txt  Git  my.txt  README.md  Test1.txt  Test.txt
